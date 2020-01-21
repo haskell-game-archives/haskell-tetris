@@ -17,3 +17,4 @@ cabal.config
 *.hp
 scores
 stack.yaml.lock
+.stack-work
