@@ -18,3 +18,4 @@ cabal.config
 scores
 stack.yaml.lock
 .stack-work
+dist-newstyle

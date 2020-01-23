@@ -144,6 +144,7 @@ drawBlock color = do
 
 drawGrid :: Integer -> Integer -> ColorID -> Update()
 drawGrid y x c = do
+  resizeWindow 50 150
   setColor c
   moveCursor y (x+1)
   drawString gridTop
