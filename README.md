@@ -1,3 +1,6 @@
+![stack](https://github.com/haskell-game-archives/haskell-tetris/workflows/stack/badge.svg)
+![cabal](https://github.com/haskell-game-archives/haskell-tetris/workflows/cabal/badge.svg)
+
 # Building and running
 
 ## On Haskell Platform / with `cabal`
