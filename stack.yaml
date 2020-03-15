@@ -1,7 +1,1 @@
-resolver: lts-14.7
-
-packages:
-  - .
-
-extra-deps:
-  - ncurses-0.2.16
+stack-lts-14.yaml
