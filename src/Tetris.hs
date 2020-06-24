@@ -1,5 +1,5 @@
-module Tetris(
-    newGame,
+module Tetris
+  ( newGame,
     randomShape,
     update,
     addBlock,
@@ -12,19 +12,20 @@ module Tetris(
     gameOver,
     Grid,
     Row,
-    Block(..),
-    Shape(..)
-) where
+    Block (..),
+    Shape (..),
+  )
+where
 
 import Data.List
 import Data.Maybe
 import System.Random
 
 data Shape = J | L | I | S | Z | O | T
-            deriving (Eq, Show, Enum)
+  deriving (Eq, Show, Enum)
 
-data Block = Block { shape :: Shape, moving::Bool, origin::Bool}
-            deriving (Eq, Show)
+data Block = Block {shape :: Shape, moving :: Bool, origin :: Bool}
+  deriving (Eq, Show)
 
 type Row = [Maybe Block]
 
@@ -36,7 +37,7 @@ newGame = replicate gridHeight (replicate gridWidth Nothing)
 
 --Returns a tuple containing a random shape and a generator
 randomShape :: RandomGen g => g -> (Shape, g)
-randomShape g = case randomR (0,length [J ..]-1) g of (r, g') -> (toEnum r, g')
+randomShape g = case randomR (0, length [J ..] -1) g of (r, g') -> (toEnum r, g')
 
 --Updates the state of a Tetris grid by gravitating, clearing lines and
 --stopping blocks
@@ -85,37 +86,37 @@ touchleft = any moving . mapMaybe head
 rotate :: Grid -> Grid
 rotate g = insertRotated (clearGrid g) (rotateBlock g) (map (getBlock g) (movingCoordinates g))
 
-insertRotated :: Grid -> [(Int,Int)] -> [Maybe Block] -> Grid
+insertRotated :: Grid -> [(Int, Int)] -> [Maybe Block] -> Grid
 insertRotated grid [] _ = grid
-insertRotated grid (h:t) (val:valt) = insertRotated (setBlock grid h val) t valt
-insertRotated _ (_:_) [] = error "This should not happen"
+insertRotated grid (h : t) (val : valt) = insertRotated (setBlock grid h val) t valt
+insertRotated _ (_ : _) [] = error "This should not happen"
 
 clearGrid :: Grid -> Grid
 clearGrid grid = clearGrid' grid $ movingCoordinates grid
 
-clearGrid' :: Grid -> [(Int,Int)] -> Grid
+clearGrid' :: Grid -> [(Int, Int)] -> Grid
 clearGrid' = foldl (\grid h -> setBlock grid h Nothing)
 
-movingCoordinates :: Grid -> [(Int,Int)]
+movingCoordinates :: Grid -> [(Int, Int)]
 movingCoordinates [] = []
-movingCoordinates (h:t) = movingCoordinates' h (25 - length t)  ++ movingCoordinates t
+movingCoordinates (h : t) = movingCoordinates' h (25 - length t) ++ movingCoordinates t
 
-movingCoordinates' :: Row -> Int -> [(Int,Int)]
+movingCoordinates' :: Row -> Int -> [(Int, Int)]
 movingCoordinates' [] _ = []
-movingCoordinates' (h:t) y
-  | movingBlock h = (y,9- length t):movingCoordinates' t y
+movingCoordinates' (h : t) y
+  | movingBlock h = (y, 9 - length t) : movingCoordinates' t y
   | otherwise = movingCoordinates' t y
 
-getOrigin :: Grid -> (Int,Int)
+getOrigin :: Grid -> (Int, Int)
 getOrigin = head . origins
 
-isOrigin :: Grid -> (Int,Int) -> Bool
-isOrigin grid (x,y) = maybe False origin $ getBlock grid (x, y)
+isOrigin :: Grid -> (Int, Int) -> Bool
+isOrigin grid (x, y) = maybe False origin $ getBlock grid (x, y)
 
-origins :: Grid -> [(Int,Int)]
+origins :: Grid -> [(Int, Int)]
 origins grid = filter (isOrigin grid) (movingCoordinates grid)
 
-rotateBlock :: Grid -> [(Int,Int)]
+rotateBlock :: Grid -> [(Int, Int)]
 rotateBlock grid
   | hasOrigin grid && all (unoccupied grid) rotated = rotated
   | otherwise = moving_coords
@@ -123,21 +124,21 @@ rotateBlock grid
     moving_coords = movingCoordinates grid
     rotated = map (rotatePoint $ getOrigin grid) moving_coords
 
-rotatePoint ::(Int,Int) -> (Int,Int) -> (Int,Int)
-rotatePoint (originx,originy) (x,y) = (originx + originy - y, originy - originx + x)
+rotatePoint :: (Int, Int) -> (Int, Int) -> (Int, Int)
+rotatePoint (originx, originy) (x, y) = (originx + originy - y, originy - originx + x)
 
-hasOrigin ::Grid -> Bool
+hasOrigin :: Grid -> Bool
 hasOrigin = not . null . origins
 
-unoccupied :: Grid -> (Int,Int) -> Bool
-unoccupied grid (x,y) =
-  and [x > 0, x < gridHeight, y > 0, y < gridWidth, not . stationaryBlock $ getBlock grid (x,y)]
+unoccupied :: Grid -> (Int, Int) -> Bool
+unoccupied grid (x, y) =
+  and [x > 0, x < gridHeight, y > 0, y < gridWidth, not . stationaryBlock $ getBlock grid (x, y)]
 
-getBlock :: Grid -> (Int,Int) -> Maybe Block
-getBlock grid (x,y) = grid !! x !! y
+getBlock :: Grid -> (Int, Int) -> Maybe Block
+getBlock grid (x, y) = grid !! x !! y
 
-setBlock :: Grid -> (Int,Int) -> Maybe Block -> Grid
-setBlock grid (x,y) val = g1 ++ setBlock' (head g2) y val : tail g2
+setBlock :: Grid -> (Int, Int) -> Maybe Block -> Grid
+setBlock grid (x, y) val = g1 ++ setBlock' (head g2) y val : tail g2
   where
     (g1, g2) = splitAt x grid
 
@@ -152,14 +153,14 @@ score = product . replicate 2 . length . filter id . map fullLine
 
 --Indicates whether the given states results in a game over
 gameOver :: Grid -> Bool
-gameOver = any (not . all moving . catMaybes) . take 4
+gameOver = not . all (all moving . catMaybes) . take 4
 
 ---Helpers
 
 gridHeight :: Int
 gridHeight = 26
 
-gridWidth:: Int
+gridWidth :: Int
 gridWidth = 10
 
 --Gravitates moving blocks downwards
@@ -170,40 +171,35 @@ gravitate rows
   where
     gravitate_row :: Row -> Row
     gravitate_row [] = []
-    gravitate_row row@(h:t)
-      | movingBlock h = move_blocks row
+    gravitate_row row@(h : t)
+      | movingBlock h = moveBlocks row
       | otherwise = h : gravitate_row t
-
     gravitate_rows :: Grid -> Grid
     gravitate_rows [] = []
-    gravitate_rows (h:t) = gravitate_row h : gravitate_rows t
+    gravitate_rows (h : t) = gravitate_row h : gravitate_rows t
 
 --Moves blocks downwards
-move_blocks :: Row -> Row
-move_blocks l
-  | is_gap (gap l) = (Nothing:movingBlocks l) ++ tail (gap l) ++ ground l
+moveBlocks :: Row -> Row
+moveBlocks l
+  | is_gap (gap l) = (Nothing : movingBlocks l) ++ tail (gap l) ++ ground l
   | otherwise = error "Should never happen?"
   where
     is_gap :: Row -> Bool
     is_gap row = not (null $ gap row) && isNothing (head $ gap row)
-
     movingBlocks :: Row -> Row
-    movingBlocks (h:t) | movingBlock h = h:movingBlocks t
+    movingBlocks (h : t) | movingBlock h = h : movingBlocks t
     movingBlocks _ = []
-
     gap :: Row -> Row
-    gap (Nothing:t) = Nothing: gap' t
-    gap (h:t) | movingBlock h = gap t
+    gap (Nothing : t) = Nothing : gap' t
+    gap (h : t) | movingBlock h = gap t
     gap _ = []
-
     gap' :: Row -> Row
-    gap' (Nothing:t) = Nothing:gap' t
+    gap' (Nothing : t) = Nothing : gap' t
     gap' _ = []
-
     ground :: Row -> Row
     ground [] = []
-    ground (h:t)
-      | stationaryBlock h = h:t
+    ground (h : t)
+      | stationaryBlock h = h : t
       | otherwise = ground t
 
 --Determines whether the moving blocks have stopped moving
@@ -213,8 +209,8 @@ stopped rows = any stopped' (transpose rows) || empty rows
     stopped' :: Row -> Bool
     stopped' [] = False
     stopped' row | all movingBlock row = True
-    stopped' (first:second:_) | movingBlock first && stationaryBlock second = True
-    stopped' (_:t) = stopped' t
+    stopped' (first : second : _) | movingBlock first && stationaryBlock second = True
+    stopped' (_ : t) = stopped' t
 
 --Determines whether a given block is moving
 movingBlock :: Maybe Block -> Bool
@@ -234,17 +230,17 @@ empty rows = all empty' (transpose rows)
 --Clears all full lines from the grid
 clearLines :: Grid -> Grid
 clearLines rows
-  | empty rows = replicate (missing_rows rows) empty_row ++ remove_lines rows
+  | empty rows = replicate (missingRows rows) emptyRow ++ removeLines rows
   | otherwise = rows
 
-missing_rows :: Grid -> Int
-missing_rows rows = length rows - length (remove_lines rows)
+missingRows :: Grid -> Int
+missingRows rows = length rows - length (removeLines rows)
 
-empty_row :: Row
-empty_row = replicate 10 Nothing
+emptyRow :: Row
+emptyRow = replicate 10 Nothing
 
-remove_lines :: Grid -> Grid
-remove_lines = filter (not . fullLine)
+removeLines :: Grid -> Grid
+removeLines = filter (not . fullLine)
 
 --Determines whether a line is full
 fullLine :: Row -> Bool
@@ -258,8 +254,8 @@ freezeBlocks rows
   where
     freezeBlocks' :: Row -> Row
     freezeBlocks' [] = []
-    freezeBlocks' (Just (Block s True o):t) = Just (Block s False o): freezeBlocks' t
-    freezeBlocks' b  = head b:freezeBlocks' (tail b)
+    freezeBlocks' (Just (Block s True o) : t) = Just (Block s False o) : freezeBlocks' t
+    freezeBlocks' b = head b : freezeBlocks' (tail b)
 
 --Creates a grid containing a given shape to put on top of a game grid
 createShape :: Shape -> Grid
@@ -276,66 +272,58 @@ createShape sh
     block shape' origin' = Just (Block shape' True origin')
     x = Nothing
     hpad l = replicate 3 x ++ l ++ replicate 4 x
-
     pad s
-      | length s == 2 = empty_row : map hpad s ++ [empty_row]
-      | length s == 3 = empty_row : map hpad s
+      | length s == 2 = emptyRow : map hpad s ++ [emptyRow]
+      | length s == 3 = emptyRow : map hpad s
       | otherwise = map hpad s
-
-    createI = [
-      [x,b,x],
-      [x,o,x],
-      [x,b,x],
-      [x,b,x]
+    createI =
+      [ [x, b, x],
+        [x, o, x],
+        [x, b, x],
+        [x, b, x]
       ]
       where
         b = block I False
         o = block I True
-
-    createJ = [
-      [x,b,x],
-      [x,o,x],
-      [b,b,x]
+    createJ =
+      [ [x, b, x],
+        [x, o, x],
+        [b, b, x]
       ]
       where
         b = block J False
         o = block J True
-
-    createL = [
-      [x,b,x],
-      [x,o,x],
-      [x,b,b]
+    createL =
+      [ [x, b, x],
+        [x, o, x],
+        [x, b, b]
       ]
       where
         b = block L False
         o = block L True
-
-    createS = [
-      [x,b,b],
-      [b,o,x]
+    createS =
+      [ [x, b, b],
+        [b, o, x]
       ]
       where
         b = block S False
         o = block S True
-
-    createZ = [
-      [b,b,x],
-      [x,o,b]
+    createZ =
+      [ [b, b, x],
+        [x, o, b]
       ]
       where
         b = block Z False
         o = block Z True
-
-    createO = [
-      [x,b,b],
-      [x,b,b]
+    createO =
+      [ [x, b, b],
+        [x, b, b]
       ]
       where
         b = block O False
-
-    createT = [
-      [b,o,b],
-      [x,b,x]
+    createT =
+      [ [b, o, b],
+        [x, b, x]
       ]
       where
         b = block T False

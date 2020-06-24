@@ -1,5 +1,6 @@
 ![stack](https://github.com/haskell-game-archives/haskell-tetris/workflows/stack/badge.svg)
 ![cabal](https://github.com/haskell-game-archives/haskell-tetris/workflows/cabal/badge.svg)
+![lint](https://github.com/haskell-game-archives/haskell-tetris/workflows/lint/badge.svg)
 
 # Building and running
 

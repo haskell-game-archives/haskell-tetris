@@ -1,7 +1,7 @@
 import System.Directory
 import TetrisCurses
 
-main :: IO()
+main :: IO ()
 main = do
   scores <- unpersistScores
   newScores <- playGame scores

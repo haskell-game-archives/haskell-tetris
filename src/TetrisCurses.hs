@@ -20,8 +20,7 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
   white <- newColorID ColorWhite ColorWhite 7
   magenta <- newColorID ColorMagenta ColorMagenta 8
   redtext <- newColorID ColorRed ColorDefault 9
-  let
-      draw :: Maybe Block -> Update()
+  let draw :: Maybe Block -> Update ()
       draw (Just (Block I _ _)) = drawBlock red
       draw (Just (Block S _ _)) = drawBlock green
       draw (Just (Block O _ _)) = drawBlock blue
@@ -30,24 +29,21 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
       draw (Just (Block J _ _)) = drawBlock white
       draw (Just (Block L _ _)) = drawBlock magenta
       draw Nothing = drawBlock gridcolor
-
-      drawBlocks :: Grid -> Update()
+      drawBlocks :: Grid -> Update ()
       drawBlocks [] = return ()
-      drawBlocks l@(h:t) = do
+      drawBlocks l@(h : t) = do
         when (length l <= fromIntegral rows) $ drawLine h y
         drawBlocks t
         where
-          y = (gridY+rows)- toInteger (length t)
-
-      drawLine :: Row -> Integer -> Update()
+          y = (gridY + rows) - toInteger (length t)
+      drawLine :: Row -> Integer -> Update ()
       drawLine [] _ = return ()
-      drawLine (h:t) y = do
+      drawLine (h : t) y = do
         let x = columns - (toInteger (length block) * toInteger (length t))
         moveCursor y $ gridX + x + columns
         draw h
         drawLine t y
-
-      drawGameOver :: Update()
+      drawGameOver :: Update ()
       drawGameOver = do
         moveCursor (gridY + quot rows 2) (gridX + 8)
         setColor redtext
@@ -56,23 +52,19 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
         drawString "     GAME OVER!     "
         moveCursor (gridY + quot rows 2 + 2) (gridX + 2)
         drawString " press 'r' to retry "
-
-      drawScore :: Int -> Update()
+      drawScore :: Int -> Update ()
       drawScore scoreValue = do
         moveCursor (gridY - 1) (gridX + 1)
         setColor gridcolor
         let scorestr = show scoreValue
         drawString ("Score: " ++ scorestr)
-
       drawHighScores :: [Int] -> Update ()
-      drawHighScores scores = setColor gridcolor >> forM_ (zip [1..] scores) drawHighScore
-
-      drawLevel :: Int -> Update()
+      drawHighScores scores = setColor gridcolor >> forM_ (zip [1 ..] scores) drawHighScore
+      drawLevel :: Int -> Update ()
       drawLevel level = do
         moveCursor (gridY - 1) (gridX + 15)
         setColor gridcolor
         drawString ("Level: " ++ show level)
-
       levelMenu = do
         setColor redtext
         drawString "                    "
@@ -80,20 +72,17 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
         drawString "    Choose level:   "
         moveCursor (gridY + quot rows 2 + 2) (gridX + 2)
         drawString "        0-9         "
-
       clearStats = do
         moveCursor (gridY - 1) (gridX + 1)
         setColor gridcolor
         drawString "                      "
-
       updateScreen :: Grid -> Int -> StdGen -> Int -> [Int] -> Bool -> Curses [Int]
       updateScreen gameState currentScore gen lvl highScores updatable = do
-        let
-          gameEnded = gameOver gameState
-          newHighScores
-            | gameEnded && updatable = take 5 . reverse . sort $ currentScore : highScores
-            | otherwise = highScores
-          newUpd = not gameEnded
+        let gameEnded = gameOver gameState
+            newHighScores
+              | gameEnded && updatable = take 5 . reverse . sort $ currentScore : highScores
+              | otherwise = highScores
+            newUpd = not gameEnded
         updateWindow w $ do
           drawBlocks gameState
           drawScore currentScore
@@ -101,7 +90,7 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
           when gameEnded drawGameOver
           drawHighScores newHighScores
         render
-        ev <- getEvent w (Just ((1+(9-toInteger lvl))*100))
+        ev <- getEvent w (Just ((1 + (9 - toInteger lvl)) * 100))
         case ev of
           Nothing -> updateScreen state newScore gen' lvl newHighScores newUpd
           Just ev'
@@ -116,8 +105,7 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
         where
           (nextshape, gen') = randomShape gen
           state = update gameState nextshape
-          newScore = currentScore + (score gameState*(1+lvl))
-
+          newScore = currentScore + (score gameState * (1 + lvl))
       game :: [Int] -> Curses [Int]
       game scores = do
         updateWindow w $ drawGrid gridY gridX gridcolor
@@ -137,31 +125,31 @@ playGame theHighScores = newStdGen >>= \g -> runCurses $ do
   setEcho False
   game theHighScores
 
-drawBlock :: ColorID -> Update()
+drawBlock :: ColorID -> Update ()
 drawBlock color = do
   setColor color
   drawString block
 
-drawGrid :: Integer -> Integer -> ColorID -> Update()
+drawGrid :: Integer -> Integer -> ColorID -> Update ()
 drawGrid y x c = do
   resizeWindow 50 150
   setColor c
-  moveCursor y (x+1)
+  moveCursor y (x + 1)
   drawString gridTop
-  drawLines (y+1) (x+1)
-  moveCursor (rows+y+1) (x+1)
+  drawLines (y + 1) (x + 1)
+  moveCursor (rows + y + 1) (x + 1)
   drawString gridBottom
 
-drawLines :: Integer -> Integer -> Update()
+drawLines :: Integer -> Integer -> Update ()
 drawLines y x = drawLines' y x rows
 
-drawLines' :: Integer -> Integer -> Integer -> Update()
+drawLines' :: Integer -> Integer -> Integer -> Update ()
 drawLines' y x n
-  | n < 1 = return()
+  | n < 1 = return ()
   | otherwise = do
-      moveCursor y x
-      drawString gridMiddle
-      drawLines' (y+1) x (n-1)
+    moveCursor y x
+    drawString gridMiddle
+    drawLines' (y + 1) x (n -1)
 
 drawHighScore :: (Integer, Int) -> Update ()
 drawHighScore (i, s) = do
@@ -169,7 +157,7 @@ drawHighScore (i, s) = do
   drawString $ printf "%d.%10d" i s
 
 gridTop, gridMiddle, gridBottom :: String
-gridTop    = " ____________________ "
+gridTop = " ____________________ "
 gridMiddle = "|                    |"
 gridBottom = " -------------------- "
 
