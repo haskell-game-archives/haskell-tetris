@@ -1,6 +1,6 @@
-![stack](https://github.com/haskell-game-archives/haskell-tetris/workflows/stack/badge.svg)
-![cabal](https://github.com/haskell-game-archives/haskell-tetris/workflows/cabal/badge.svg)
-![lint](https://github.com/haskell-game-archives/haskell-tetris/workflows/lint/badge.svg)
+[![stack](https://github.com/haskell-game-archives/haskell-tetris/workflows/stack/badge.svg)](https://github.com/haskell-game-archives/haskell-tetris/actions?query=workflow%3Astack)
+[![cabal](https://github.com/haskell-game-archives/haskell-tetris/workflows/cabal/badge.svg)](https://github.com/haskell-game-archives/haskell-tetris/actions?query=workflow%3Acabal)
+[![lint](https://github.com/haskell-game-archives/haskell-tetris/workflows/lint/badge.svg)](https://github.com/haskell-game-archives/haskell-tetris/actions?query=workflow%3Alint)
 
 # Building and running
 

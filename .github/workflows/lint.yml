@@ -15,10 +15,9 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
-
     - name: Run hlint
       env:
         HLINT_BIN_URL: "https://raw.github.com/ndmitchell/hlint/master/misc/travis.sh"
       run: |
         curl -sL $HLINT_BIN_URL | sh -s -- --version
-        curl -sL $HLINT_BIN_URL | sh -s src
+        curl -sL $HLINT_BIN_URL | sh -s app src
