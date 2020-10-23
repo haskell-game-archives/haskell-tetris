@@ -13,7 +13,7 @@ packages:
     hackage: ncurses-0.2.16@sha256:8ad9fe6562a80d28166d76adbac1eb4d40c6511fe4e9272ed6e1166dc2f1cdf1,3575
 snapshots:
 - completed:
-    size: 502299
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2020/6/22.yaml
-    sha256: 3b16e1f2e6d77dace4d39e0e1f33205474dafeaf492e9b0d8936a74450db55df
-  original: nightly-2020-06-22
+    size: 541635
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2020/10/23.yaml
+    sha256: ff158a60ee503b3e282295412894bc01337006cc8f5ab3a55daba0b196bd7288
+  original: nightly-2020-10-23
